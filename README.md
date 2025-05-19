@@ -115,6 +115,7 @@ API-CONSULTORIO/
 ├── db/ # Lógica de consultas SQL para cada recurso
 │   ├── citasQuery.js
 │   ├── consultasQuery.js
+│   ├──db.js
 │   ├── medicosQuery.js
 │   └── pacientesQuery.js
 │

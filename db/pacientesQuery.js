@@ -1,86 +1,41 @@
-import { pool } from '../config.js';
+// db/pacientes.js
+import pool from './db.js';
 
-/**
- * Carga la lista de pacientes
- */
 const listarTodosPacientesQuery = async () => {
-    try {
-        const result = await config.query('SELECT * FROM pacientes');
-        return result.rows;
-    } catch (err) {
-        console.log(err);
-        throw err;
-    }
+    const result = await pool.query('SELECT * FROM pacientes');
+    return result.rows;
 };
 
-/**
- * Buscar un paciente por su ID (llave primaria)
- */
 const listarPacientePorIdQuery = async (id) => {
-    try {
-        const result = await pool.query('SELECT * FROM pacientes WHERE id = $1 LIMIT 1', [id]);
-        return result.rows;
-    } catch (err) {
-        console.log(err);
-        throw err;
-    }
+    const result = await pool.query('SELECT * FROM pacientes WHERE id = $1', [id]);
+    return result.rows[0];
 };
 
-/**
- * Guardar un nuevo paciente
- */
-const crearPacienteQuery = async (paciente) => {
-    const { nombres } = paciente;
-    try {
-        const result = await pool.query(
-            'INSERT INTO pacientes (nombres) VALUES ($1) RETURNING *',
-            [nombres]
-        );
-        return result;
-    } catch (err) {
-        console.log(err);
-        throw err;
-    }
+const crearPacienteQuery = async ({ nombre, edad, genero, telefono }) => {
+    const result = await pool.query(
+        'INSERT INTO pacientes (nombre, edad, genero, telefono) VALUES ($1, $2, $3, $4) RETURNING *',
+        [nombre, edad, genero, telefono]
+    );
+    return result.rows[0];
 };
 
-/**
- * Actualizar un paciente por su ID
- */
-const actualizarPacienteQuery = async (id, paciente) => {
-    const { nombres } = paciente;
-    try {
-        const result = await pool.query(
-            'UPDATE pacientes SET nombres = $1 WHERE id = $2 RETURNING *',
-            [nombres, id]
-        );
-        return result;
-    } catch (err) {
-        console.log(err);
-        throw err;
-    }
+const actualizarPacienteQuery = async (id, { nombre, edad, genero, telefono }) => {
+    const result = await pool.query(
+        'UPDATE pacientes SET nombre = $1, edad = $2, genero = $3, telefono = $4 WHERE id = $5 RETURNING *',
+        [nombre, edad, genero, telefono, id]
+    );
+    return result.rows[0];
 };
 
-/**
- * Eliminar un paciente por su ID
- */
 const eliminarPacienteQuery = async (id) => {
-    try {
-        const result = await pool.query(
-            'DELETE FROM pacientes WHERE id = $1 RETURNING *',
-            [id]
-        );
-        return result;
-    } catch (err) {
-        console.log(err);
-        throw err;
-    }
+    const result = await pool.query('DELETE FROM pacientes WHERE id = $1 RETURNING *', [id]);
+    return result.rows[0];
 };
 
-// Exportar todas los funciones definidas en este archivo
 export {
     listarTodosPacientesQuery,
     listarPacientePorIdQuery,
     crearPacienteQuery,
     actualizarPacienteQuery,
     eliminarPacienteQuery
-}
+};
